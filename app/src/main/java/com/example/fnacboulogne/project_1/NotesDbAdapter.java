@@ -34,6 +34,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.Date;
+
 /**
  * Simple notes database access helper class. Defines the basic CRUD operations
  * for the notepad example, and gives the ability to list all notes as well as
@@ -48,6 +50,9 @@ public class NotesDbAdapter {
 
     public static final String KEY_TITLE = "title";
     public static final String KEY_BODY = "body";
+    public static final String KEY_CATEGORIE = "categorie";
+    public static final String KEY_ADRESSE = "adresse";
+    public static final String KEY_DATE_SAISI = "date_saisi";
     public static final String KEY_ROWID = "_id";
 
     private static final String TAG = "NotesDbAdapter";
@@ -59,7 +64,7 @@ public class NotesDbAdapter {
      */
     private static final String DATABASE_CREATE =
             "create table notes (_id integer primary key autoincrement, "
-                    + "title text not null, body text not null);";
+                    + "title text not null, body text not null,adresse text not null,date_saisi date not null,categorie text not null);";
 
     private static final String DATABASE_NAME = "data";
     private static final String DATABASE_TABLE = "notes";
@@ -126,11 +131,15 @@ public class NotesDbAdapter {
      * @param title the title of the note
      * @param body the body of the note
      * @return rowId or -1 if failed
+     * private static final String TAG = "NotesDbAdapter";
      */
-    public long createNote(String title, String body) {
+    public long createNote(String title, String body, String categorie, String adresse, String date_saisi) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
         initialValues.put(KEY_BODY, body);
+        initialValues.put(KEY_CATEGORIE, categorie);
+        initialValues.put(KEY_DATE_SAISI, adresse);
+        initialValues.put(KEY_ADRESSE, date_saisi);
 
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
@@ -159,7 +168,7 @@ public class NotesDbAdapter {
     public Cursor fetchAllNotes() {
 
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
-                KEY_BODY}, null, null, null, null, null);
+                KEY_BODY,KEY_ADRESSE,KEY_CATEGORIE,KEY_DATE_SAISI}, null, null, null, null, null);
     }
 
     /**
@@ -174,7 +183,7 @@ public class NotesDbAdapter {
         Cursor mCursor =
 
                 mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                                KEY_TITLE, KEY_BODY}, KEY_ROWID + "=" + rowId, null,
+                                KEY_TITLE, KEY_BODY,KEY_ADRESSE,KEY_CATEGORIE,KEY_DATE_SAISI}, KEY_ROWID + "=" + rowId, null,
                         null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -193,11 +202,13 @@ public class NotesDbAdapter {
      * @param body value to set note body to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateNote(long rowId, String title, String body) {
+    public boolean updateNote(long rowId, String title, String body,String adresse,String categorie, String date_saisi) {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
         args.put(KEY_BODY, body);
-
+        args.put(KEY_ADRESSE, adresse);
+        args.put(KEY_CATEGORIE, categorie);
+        args.put(KEY_DATE_SAISI, date_saisi);
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
 }
